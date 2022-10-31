@@ -12,16 +12,12 @@ const surveySlice = createSlice({
     name: "survey",
     initialState,
     reducers: {
-        updateFirstForm: (state, { payload }) => {
-            state.name = payload.name;
-            state.country = payload.country;
-            state.temperature = payload.temperature
-        },
-        updateSecondForm: (state, { payload }) => {
-            state.email = payload.email;
 
-        },
-        updateThirdForm: (state, { payload }) => {
+        updateForm: (state, { payload }) => {
+            state.name = payload.userName;
+            state.country = payload.country;
+            state.temperature = payload.temperature;
+            state.email = payload.email;
             state.color = payload.color;
 
         },
@@ -35,5 +31,5 @@ const surveySlice = createSlice({
     }
 });
 
-export const { updateFirstForm, updateSecondForm, updateThirdForm, reset } = surveySlice.actions;
+export const { updateForm, reset } = surveySlice.actions;
 export default surveySlice.reducer;

@@ -1,36 +1,48 @@
-import React, { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
-import { updateThirdForm } from '../../features/surveySlice';
+import React, { useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { updateForm } from '../features/surveySlice';
 
-const ThirdForm = ({ prevStep, nextStep }) => {
-    const userColor = useSelector((state) => state.survey.color);
-    console.log(userColor)
-    const [color, setColor] = useState("" || userColor);
-    // const [formValues, setFormValues] = useState({ color: "" || userColor })
-    const [error, setError] = useState(false);
+const ThirdPage = () => {
+    const savedColor = localStorage.getItem("color");
+    const initialColor = JSON.parse(savedColor);
+    const [color, setColor] = useState(initialColor || "");
+    const [error, setError] = useState(null);
     const dispatch = useDispatch();
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
+    const { state } = useLocation();
+    let tempObj3 = {};
 
-    // const handleChange = (e) => {
-    //     const { name, value } = e.target;
-    //     setFormValues({ ...formValues, [name]: value })
-    // }
+    useEffect(() => {
+        localStorage.setItem("color", JSON.stringify(color));
+    }, [color]);
+    const handleChange = (e) => {
+        const { value } = e.target;
+        setError(null)
+        setColor(value)
+
+    }
     const submitFormData = (e) => {
+        // console.time();
         e.preventDefault();
-
-        console.log(e.target.value)
         if (color.length === 0) {
-            setError(true);
+            setError("Field Cannot be empty")
         }
-        // //   setError(true);
-        // // } 
         else {
-            // console.log(color)
-            dispatch(updateThirdForm({ color: color }))
-            nextStep()
-            // navigate('/results')
+            setError(null)
+            tempObj3 = { ...state, color: color }
+            console.log(tempObj3)
+            dispatch(updateForm(tempObj3))
 
+            //remove all items from localstorage
+            for (const key in tempObj3) {
+                localStorage.removeItem(`${key}`)
+            }
+
+            navigate('/results',);
+            // console.timeEnd()
         }
+
     }
     return (
         <div className="container mt-10 h-48 px-4">
@@ -42,9 +54,11 @@ const ThirdForm = ({ prevStep, nextStep }) => {
             <div className="flex items-center mb-4">
                 <input id="country-option-1"
                     type="radio"
-                    name="Red"
+                    name="color"
                     value="Red"
-                    onChange={(e) => setColor(e.target.value)}
+                    onChange={handleChange}
+                    checked={color === "Red"}
+                    // onChange={(e) => setColor(e.target.value)}
                     className="h-4 w-4 border-gray-300 focus:ring-2 focus:ring-blue-300"
                     aria-labelledby="country-option-1"
                     aria-describedby="country-option-1" />
@@ -55,10 +69,11 @@ const ThirdForm = ({ prevStep, nextStep }) => {
 
             <div className="flex items-center mb-4">
                 <input type="radio"
-                    name="Green"
+                    name="color"
                     value="Green"
-                    onChange={(e) => setColor(e.target.value)}
-                    // onChange={handleChange}
+                    checked={color === "Green"}
+                    // onChange={(e) => setColor(e.target.value)}
+                    onChange={handleChange}
                     className="h-4 w-4 border-gray-300 focus:ring-2 focus:ring-blue-300" aria-labelledby="country-option-2" aria-describedby="country-option-2" />
                 <label className="text-sm font-medium text-gray-900 ml-2 block">
                     Green
@@ -66,10 +81,11 @@ const ThirdForm = ({ prevStep, nextStep }) => {
             </div>
             <div className="flex items-center mb-4">
                 <input type="radio"
-                    name="Blue"
+                    name="color"
                     value="Blue"
-                    onChange={(e) => setColor(e.target.value)}
-                    // onChange={handleChange}
+                    checked={color === "Blue"}
+                    // onChange={(e) => setColor(e.target.value)}
+                    onChange={handleChange}
                     className="h-4 w-4 border-gray-300 focus:ring-2 focus:ring-blue-300" aria-labelledby="country-option-2" aria-describedby="country-option-2" />
                 <label className="text-sm font-medium text-gray-900 ml-2 block">
                     Blue
@@ -77,16 +93,17 @@ const ThirdForm = ({ prevStep, nextStep }) => {
             </div>
             <div className="flex items-center mb-4">
                 <input type="radio"
-                    name="other"
-                    value="other"
-                    onChange={(e) => setColor(e.target.value)}
-                    // onChange={handleChange}
+                    name="color"
+                    value="Other"
+                    checked={color === "Other"}
+                    // onChange={(e) => setColor(e.target.value)}
+                    onChange={handleChange}
                     className="h-4 w-4 border-gray-300 focus:ring-2 focus:ring-blue-300" aria-labelledby="country-option-2" aria-describedby="country-option-2" />
                 <label className="text-sm font-medium text-gray-900 ml-2 block">
                     Other
                 </label>
             </div>
-            {error ? <span className='text-red-500'>Please Select</span> : <></>}
+            {error ? <span className='text-red-500'>{error}</span> : <></>}
             <div className="flex space-x-2 mt-2">
                 <button type="button"
                     className="inline-block
@@ -96,7 +113,7 @@ const ThirdForm = ({ prevStep, nextStep }) => {
                     hover:shadow-lg focus:bg-blue-700 focus:shadow-lg 
                     focus:outline-none focus:ring-0 active:bg-blue-800 
                     active:shadow-lg transition duration-150 
-                    ease-in-out" onClick={prevStep}>
+                    ease-in-out" onClick={() => navigate("/secondPage")}>
                     Previous
                 </button>
                 <button type="button"
@@ -115,4 +132,4 @@ const ThirdForm = ({ prevStep, nextStep }) => {
     )
 }
 
-export default ThirdForm
+export default ThirdPage

@@ -1,7 +1,6 @@
 import React, { } from 'react'
 import { useSelector } from 'react-redux';
-
-// import { reset } from '../features/surveySlice';
+import { useNavigate } from 'react-router-dom';
 
 const Results = () => {
     const name = useSelector((state) => state.survey.name);
@@ -9,12 +8,12 @@ const Results = () => {
     const temperature = useSelector((state) => state.survey.temperature);
     const email = useSelector((state) => state.survey.email);
     const color = useSelector((state) => state.survey.color);
-
+    const navigate = useNavigate();
     // useEffect(() => {
     //     dispatch(reset({ name: " ", country: "" }))
     // }, [])
     const handleClick = () => {
-        window.location.reload();
+        navigate("/")
     }
     return (
         <div className='container mt-10 h-48 pl-10'>

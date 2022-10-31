@@ -1,40 +1,42 @@
-import React, { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
-// import validator from "validator";
+import React, { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom';
+const SecondPage = () => {
+    const savedEmail = localStorage.getItem("email");
+    const initialEmail = JSON.parse(savedEmail);
+    const [formValues, setFormValues] = useState({ email: initialEmail || "" });
+    const [error, setError] = useState(null);
+    const navigate = useNavigate();
+    const { state } = useLocation();
+    let tempObjPg2 = {};
 
-import { updateSecondForm } from '../../features/surveySlice';
-const SecondForm = ({ nextStep, prevStep }) => {
-    const userEmail = useSelector((state) => state.survey.email);
-    const [formValues, setFormValues] = useState({ email: "" || userEmail });
-    const [error, setError] = useState(null)
-    const dispatch = useDispatch();
-
+    useEffect(() => {
+        localStorage.setItem("email", JSON.stringify(formValues.email))
+    }, [formValues.email]);
     const isValidEmail = (val) => {
-        return /\S+@\S+\.\S+/.test(val);
+        return /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(val);
     }
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormValues({ ...formValues, [name]: value })
+        setError(null)
+        setFormValues(prevState => {
+            return { ...prevState, [name]: value }
+        })
+
     }
     const submitFormData = (e) => {
         e.preventDefault();
+        tempObjPg2 = { ...state, email: formValues.email }
 
-        // let reg = /\S+@\S+\.\S+/;
-        // if (validator.isEmail(e.target.value)) {
-        //     setError(true)
-        // }
-        // if (!reg.test(formValues.email)) {
-        //     setError(true)
-        // }
         if (!isValidEmail(formValues.email)) {
             setError('Email is invalid')
         }
         else {
-            setError(null)
-            dispatch(updateSecondForm({ email: formValues.email }))
-            nextStep();
+
+            navigate("/thirdPage", { state: tempObjPg2 })
+            // dispatch(updateSecondForm({ email: formValues.email }))
         }
     }
+
     return (
         <div className="container mt-10 h-48 px-4" >
             <div className="mb-3  w-auto">
@@ -42,7 +44,7 @@ const SecondForm = ({ nextStep, prevStep }) => {
                     What is your Email ?
                 </label>
                 <input
-                    type="text"
+                    type="email"
                     className="form-control block w-full px-3 py-1.5 text-base
                            font-normal
                            text-gray-700
@@ -70,7 +72,7 @@ const SecondForm = ({ nextStep, prevStep }) => {
                         hover:shadow-lg focus:bg-blue-700 focus:shadow-lg 
                         focus:outline-none focus:ring-0 active:bg-blue-800 
                         active:shadow-lg transition duration-150 
-                        ease-in-out" onClick={prevStep}>
+                        ease-in-out" onClick={() => navigate("/")} >
                     Previous
                 </button>
                 <button type="submit"
@@ -89,4 +91,4 @@ const SecondForm = ({ nextStep, prevStep }) => {
     )
 }
 
-export default SecondForm
+export default SecondPage
